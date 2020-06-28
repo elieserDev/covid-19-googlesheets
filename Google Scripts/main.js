@@ -142,39 +142,58 @@ function insertWeatherDB(data, capital) {
   let minHumidityCell = 'd' + targetLine;
   let maxHumidityCell = 'e' + targetLine;
   let updatedCell = 'f' + targetLine;
-
+  let timestampCell = 'g' + targetLine;
+  let timestampFullValue = createdAt().split(" - ");
+  
   sheet.getRange(capitalCell).setValue(capital);
   sheet.getRange(minTempCell).setValue(data.minTemperature);
   sheet.getRange(maxTempCell).setValue(data.maxTemperature);
   sheet.getRange(minHumidityCell).setValue(data.minHumidity);
   sheet.getRange(maxHumidityCell).setValue(data.maxHumidity);
-  sheet.getRange(updatedCell).setValue(createdAt());
+  sheet.getRange(updatedCell).setValue(timestampFullValue[0]);
+  sheet.getRange(timestampCell).setValue(timestampFullValue[1]);
 }
 
 function getWeather(url) {
   let data = UrlFetchApp.fetch(url);
-  let htmlText = data.getContentText();
   
-  let minDivid1 = htmlText.split('<span class="_margin-r-20" id="min-temp-1">');
-  let minDivid2 = minDivid1[1].split('</span>');
-  let minTemperature = minDivid2[0];
+//  try {
+//    //Criar algoritimo baseado em um dos templates. Esse é para quando os dados de clima estão em uma espécie de card no topo do corpo do site.
+//    //Testar cada código para encontrar o template que falta. Existe apenas dois casos e um já está funcionando
+//    let htmlText = data.getContentText();
+//    
+//    let minDivid1 = htmlText.split('<span class="min-temp">');
+//    let minDivid2 = minDivid1[1].split('</span>');
+//    let min = minDivid2[0];
+//    
+//    return min;
+//  } catch (e) {
+    //Algoritimo para busca de dados em um dos templates - já está funcionando!
+    
+    let htmlText = data.getContentText();
+    
+    let minDivid1 = htmlText.split('<span class="_margin-r-20" id="min-temp-1">');
+    let minDivid2 = minDivid1[1].split('</span>');
+    let minTemperature = minDivid2[0].replace('°','');
+    
+    let maxDivid1 = htmlText.split('<span id="max-temp-1">');
+    let maxDivid2 = maxDivid1[1].split('</span>');
+    let maxTemperature = maxDivid2[0].replace('°','');
+    
+    let minHumidityDivid1 = htmlText.split('<span class="_margin-r-20">');
+    let minHumidityDivid2 = minHumidityDivid1[1].split('</span>');
+    let minHumidity = minHumidityDivid2[0];
+    
+    let maxHumidityDivid1 = htmlText.split('%</span>');
+    let maxHumidityDivid2 = maxHumidityDivid1[1].split('<span>');
+    let maxHumidity = maxHumidityDivid2[1] + "%";
+    
+    return {
+      minTemperature: minTemperature, 
+      maxTemperature: maxTemperature, 
+      minHumidity: minHumidity, 
+      maxHumidity: maxHumidity
+    };
   
-  let maxDivid1 = htmlText.split('<span id="max-temp-1">');
-  let maxDivid2 = maxDivid1[1].split('</span>');
-  let maxTemperature = maxDivid2[0];
-  
-  let minHumidityDivid1 = htmlText.split('<span class="_margin-r-20">');
-  let minHumidityDivid2 = minHumidityDivid1[1].split('</span>');
-  let minHumidity = minHumidityDivid2[0];
-  
-  let maxHumidityDivid1 = htmlText.split('%</span>');
-  let maxHumidityDivid2 = maxHumidityDivid1[1].split('<span>');
-  let maxHumidity = maxHumidityDivid2[1] + "%";
-  
-  return {
-    minTemperature: minTemperature, 
-    maxTemperature: maxTemperature, 
-    minHumidity: minHumidity, 
-    maxHumidity: maxHumidity
-  };
+//  }
 }
