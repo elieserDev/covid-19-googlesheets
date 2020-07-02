@@ -1,7 +1,6 @@
 function getStatesDataSetAPI() {
   let states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
   let cases = new Array();
-  //  let yesterday = getYesterday();
 
   for (let state of states) {
     let url = "https://brasil.io/api/dataset/covid19/caso/data/?state=" + state + "&is_last=true";
@@ -9,7 +8,7 @@ function getStatesDataSetAPI() {
     let json = response.getContentText();
     let dataResponse = JSON.parse(json);
     let metric = dataResponse.results.find(function (item) { return item.city == null });
-    //Insert SheetDB.
+
     insertDB(metric, "Casos em Estados COVID-19");
   }
 }
@@ -45,7 +44,6 @@ function getCapitalDataSetAPI() {
     { capital: 'Palmas', state: 'TO' }
   ];
   let cases = new Array();
-  //  let yesterday = getYesterday();
 
   for (let local of locals) {
     let url = "https://brasil.io/api/dataset/covid19/caso/data/?state=" + local.state + "&is_last=true";
@@ -55,7 +53,7 @@ function getCapitalDataSetAPI() {
     let metric = dataResponse.results.find(function (item) { return item.city == local.capital });
     if (metric) {
       metric.state = local.capital + "-" + local.state;
-      insertDB(metric, "Casos em Capital COVID-19"); //Insert SheetDB.
+      insertDB(metric, "Casos em Capital COVID-19");
     }
   }
 }
@@ -181,5 +179,4 @@ function getWeather(url) {
     maxHumidity: maxHumidity
   };
 
-  //  }
 }
